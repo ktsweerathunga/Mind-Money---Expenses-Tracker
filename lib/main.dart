@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'Screens/home_screen.dart';
+import 'Screens/main_screen.dart';
+import 'Screens/welcome_screen.dart';
 import 'Models/transaction_model.dart';
 
 void main() async {
@@ -12,8 +14,24 @@ void main() async {
 
   final prefs = await SharedPreferences.getInstance();
   final isDark = prefs.getBool('darkMode') ?? false;
+  final seen = prefs.getBool('seenOnboarding') ?? true; // onboarding assumed done
+  final name = prefs.getString('username');
 
-  runApp(MoneyMindApp(isDarkMode: isDark));
+  Widget startScreen;
+  if (!seen) {
+    // If you have onboarding
+    // startScreen = const OnboardingScreen();
+    startScreen = const WelcomeScreen();
+  } else if (name == null || name.isEmpty) {
+    startScreen = const WelcomeScreen();
+  } else {
+    startScreen = MoneyMindApp(isDarkMode: isDark);
+  }
+
+  runApp(MaterialApp(
+    debugShowCheckedModeBanner: false,
+    home: startScreen,
+  ));
 }
 
 class MoneyMindApp extends StatefulWidget {
@@ -28,12 +46,13 @@ class _MoneyMindAppState extends State<MoneyMindApp> {
   late bool _isDark = widget.isDarkMode;
 
   void _toggleTheme() async {
-    final prefs = await SharedPreferences.getInstance();
-    setState(() {
-      _isDark = !_isDark;
-      prefs.setBool('darkMode', _isDark);
-    });
-  }
+  final prefs = await SharedPreferences.getInstance();
+  setState(() {
+    _isDark = !_isDark;
+    prefs.setBool('darkMode', _isDark);
+  });
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -45,15 +64,10 @@ class _MoneyMindAppState extends State<MoneyMindApp> {
         brightness: _isDark ? Brightness.dark : Brightness.light,
         colorScheme: ColorScheme.fromSeed(
           seedColor: Colors.teal,
-          brightness: _isDark ? Brightness.dark : Brightness.light,),
-        appBarTheme: AppBarTheme(
-          elevation: 0,
-          backgroundColor: Colors.transparent,
-          foregroundColor: _isDark ? Colors.white : Colors.black,
-          centerTitle: true,
+          brightness: _isDark ? Brightness.dark : Brightness.light,
         ),
       ),
-      home: HomeScreen(onToggleTheme: _toggleTheme),
+      home: MainScreen(onToggleTheme: _toggleTheme),
     );
   }
 }
