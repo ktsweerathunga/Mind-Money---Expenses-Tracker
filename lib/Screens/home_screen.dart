@@ -148,9 +148,29 @@ class _HomeScreenState extends State<HomeScreen> {
           );
         },
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const AddTransactionScreen())),
-        child: const Icon(Icons.add),
+      floatingActionButton: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
+          gradient: LinearGradient(
+            colors: [
+              Theme.of(context).colorScheme.primary,
+              Theme.of(context).colorScheme.primary.withOpacity(0.8),
+            ],
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+              blurRadius: 12,
+              offset: const Offset(0, 6),
+            ),
+          ],
+        ),
+        child: FloatingActionButton(
+          onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const AddTransactionScreen())),
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          child: const Icon(Icons.add, color: Colors.white, size: 28),
+        ),
       ),
     );
   }
@@ -163,46 +183,156 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-        color: Theme.of(c).colorScheme.primaryContainer,
+        borderRadius: BorderRadius.circular(24),
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            Theme.of(c).colorScheme.primary.withOpacity(0.1),
+            Theme.of(c).colorScheme.secondary.withOpacity(0.05),
+          ],
+        ),
+        border: Border.all(
+          color: Theme.of(c).colorScheme.primary.withOpacity(0.2),
+          width: 1,
+        ),
         boxShadow: [
           BoxShadow(
-            color: Theme.of(c).shadowColor.withOpacity(0.1),
-            blurRadius: 8,
-            offset: const Offset(0, 4),
-          )
+            color: Theme.of(c).colorScheme.primary.withOpacity(0.1),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
+            spreadRadius: 0,
+          ),
         ],
       ),
-      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text('Total Balance', style: Theme.of(c).textTheme.bodyMedium),
-        const SizedBox(height: 8),
-        Text(
-          '$_currency ${balance.toStringAsFixed(2)}',
-          style: Theme.of(c).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+      child: Container(
+        padding: const EdgeInsets.all(24),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(24),
+          color: Colors.white.withOpacity(0.1),
         ),
-        const SizedBox(height: 16),
-        Row(children: [
-          _smallTile('Income', income, Colors.green),
-          const SizedBox(width: 24),
-          _smallTile('Expense', expense, Colors.red),
-        ]),
-      ]),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(16),
+                    gradient: LinearGradient(
+                      colors: [
+                        Theme.of(c).colorScheme.primary,
+                        Theme.of(c).colorScheme.primary.withOpacity(0.8),
+                      ],
+                    ),
+                  ),
+                  child: const Icon(
+                    Icons.account_balance_wallet,
+                    color: Colors.white,
+                    size: 24,
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Total Balance',
+                        style: Theme.of(c).textTheme.bodyMedium?.copyWith(
+                          color: Theme.of(c).colorScheme.onSurface.withOpacity(0.7),
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        '$_currency ${balance.toStringAsFixed(2)}',
+                        style: Theme.of(c).textTheme.headlineSmall?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 28,
+                          color: Theme.of(c).colorScheme.onSurface,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 24),
+            Row(
+              children: [
+                Expanded(child: _enhancedSmallTile('Income', income, Colors.green, c)),
+                const SizedBox(width: 16),
+                Expanded(child: _enhancedSmallTile('Expense', expense, Colors.red, c)),
+              ],
+            ),
+          ],
+        ),
+      ),
     );
   }
 
-  Widget _smallTile(String label, double amount, Color accent) => Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(label, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: accent)),
-          const SizedBox(height: 4),
-          Text(
-            '$_currency ${amount.toStringAsFixed(2)}',
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+  Widget _enhancedSmallTile(String label, double amount, Color accent, BuildContext c) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        color: Colors.white.withOpacity(0.8),
+        border: Border.all(
+          color: accent.withOpacity(0.3),
+          width: 1,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: accent.withOpacity(0.1),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
           ),
         ],
-      );
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8),
+                  color: accent.withOpacity(0.1),
+                ),
+                child: Icon(
+                  label == 'Income' ? Icons.trending_up : Icons.trending_down,
+                  color: accent,
+                  size: 16,
+                ),
+              ),
+              const SizedBox(width: 8),
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: accent,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Text(
+            '$_currency ${amount.toStringAsFixed(2)}',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Theme.of(c).colorScheme.onSurface,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
   Widget _buildEmptyState(BuildContext c) => Center(
         child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
@@ -222,50 +352,106 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildTransactionList(List<TransactionModel> list, BuildContext c) => ListView.separated(
         padding: const EdgeInsets.symmetric(vertical: 8),
         itemCount: list.length,
-        separatorBuilder: (_, __) => const Divider(indent: 72),
+        separatorBuilder: (_, __) => const SizedBox(height: 8),
         itemBuilder: (_, i) {
           final tx = list[i];
-          return Dismissible(
-            key: Key(tx.key.toString()),
-            direction: DismissDirection.startToEnd,
-            background: Container(
-              color: Colors.redAccent,
-              padding: const EdgeInsets.only(left: 20),
-              alignment: Alignment.centerLeft,
-              child: const Icon(Icons.delete_forever, size: 28, color: Colors.white),
-            ),
-            onDismissed: (_) {
-              tx.delete();
-              setState(() {});
-            },
-            child: Card(
-              margin: const EdgeInsets.symmetric(horizontal: 16),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-              elevation: 2,
-              child: ListTile(
-                contentPadding: const EdgeInsets.all(20),
-                leading: CircleAvatar(
-                  radius: 24,
-                  backgroundColor: tx.category == 'Income' ? Colors.teal : Colors.redAccent,
-                  child: Icon(
-                    tx.category == 'Income' ? Icons.arrow_circle_down : Icons.arrow_circle_up,
-                    color: Colors.white,
-                    size: 24,
-                  ),
-                ),
-                title: Text(tx.title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
-                subtitle: Text(DateFormat.yMMMd().format(tx.date), style: const TextStyle(fontSize: 14, color: Colors.grey)),
-                trailing: Text(
-                  '$_currency ${tx.amount.toStringAsFixed(2)}',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: tx.category == 'Income' ? Colors.green : Colors.redAccent,
-                  ),
-                ),
-              ),
-            ),
-          );
+          return _buildEnhancedTransactionCard(tx, c);
         },
       );
+
+  Widget _buildEnhancedTransactionCard(TransactionModel tx, BuildContext c) {
+    return Dismissible(
+      key: Key(tx.key.toString()),
+      direction: DismissDirection.startToEnd,
+      background: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 16),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16),
+          gradient: LinearGradient(
+            colors: [Colors.red, Colors.red.shade400],
+          ),
+        ),
+        padding: const EdgeInsets.only(left: 20),
+        alignment: Alignment.centerLeft,
+        child: const Icon(Icons.delete_forever, size: 28, color: Colors.white),
+      ),
+      onDismissed: (_) {
+        tx.delete();
+        setState(() {});
+      },
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 16),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16),
+          color: Colors.white.withOpacity(0.9),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: ListTile(
+          contentPadding: const EdgeInsets.all(20),
+          leading: Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(16),
+              gradient: LinearGradient(
+                colors: tx.category == 'Income'
+                    ? [Colors.green, Colors.green.shade400]
+                    : [Colors.red, Colors.red.shade400],
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: (tx.category == 'Income' ? Colors.green : Colors.red).withOpacity(0.3),
+                  blurRadius: 8,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: Icon(
+              tx.category == 'Income' ? Icons.arrow_circle_down : Icons.arrow_circle_up,
+              color: Colors.white,
+              size: 24,
+            ),
+          ),
+          title: Text(
+            tx.title,
+            style: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          subtitle: Text(
+            DateFormat.yMMMd().format(tx.date),
+            style: TextStyle(
+              fontSize: 14,
+              color: Theme.of(c).colorScheme.onSurface.withOpacity(0.7),
+            ),
+          ),
+          trailing: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+              color: (tx.category == 'Income' ? Colors.green : Colors.red).withOpacity(0.1),
+              border: Border.all(
+                color: (tx.category == 'Income' ? Colors.green : Colors.red).withOpacity(0.3),
+                width: 1,
+              ),
+            ),
+            child: Text(
+              '$_currency ${tx.amount.toStringAsFixed(2)}',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: tx.category == 'Income' ? Colors.green : Colors.red,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }

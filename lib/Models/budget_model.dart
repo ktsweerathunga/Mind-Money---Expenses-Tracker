@@ -37,7 +37,7 @@ class BudgetModel extends HiveObject {
         .where((tx) => 
             tx.category == category && 
             tx.date.isAfter(startOfPeriod) &&
-            tx.date.isBefore(now.add(const Duration(days: 1)))
+            tx.date.isBefore(now.add(const Duration(days: 1))))
         .fold(0.0, (sum, tx) => sum + tx.amount);
   }
 
